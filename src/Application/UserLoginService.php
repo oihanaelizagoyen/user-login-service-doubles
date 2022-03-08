@@ -8,6 +8,7 @@ class UserLoginService
 {
     const LOGIN_CORRECTO = "Login correcto";
     const LOGIN_INCORRECTO = "Login incorrecto";
+    const USUARIO_NO_LOGEADO = "Usuario no logeado";
     private array $loggedUsers = [];
     private SessionManager $sessionManager;
 
@@ -25,18 +26,32 @@ class UserLoginService
         return $this->loggedUsers;
     }
 
-    public function countExternalSessions():int{
+    public function countExternalSessions():int
+    {
 
         return $this->sessionManager->getSessions();
     }
 
-    public function login(String $userName, String $password): String{
+    public function login(String $userName, String $password): String
+    {
 
         if($this->sessionManager->login($userName, $password)){
             return self::LOGIN_CORRECTO;
         }
 
         return self::LOGIN_INCORRECTO;
+    }
+
+    public function logout(User $user): String
+    {
+
+        if(!in_array($user, $this->loggedUsers)){
+            return self::USUARIO_NO_LOGEADO;
+        }
+
+        $this->sessionManager->logout($user->getUserName());
+
+        return "Ok";
     }
 
 }

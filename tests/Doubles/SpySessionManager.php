@@ -2,10 +2,14 @@
 
 namespace UserLoginService\Tests\Doubles;
 
+use PHPUnit\Util\Exception;
 use UserLoginService\Application\SessionManager;
 
-class DummySessionManager implements SessionManager
+class SpySessionManager implements SessionManager
 {
+
+    private int $calls = 0;
+
     public function getSessions(): int
     {
         // TODO: Implement getSessions() method.
@@ -18,6 +22,15 @@ class DummySessionManager implements SessionManager
 
     public function logout(string $getUserName)
     {
-        // TODO: Implement logout() method.
+        $this->calls++;
+    }
+
+    public function verifyLogoutCalls(int $expectedCalls): bool
+    {
+        if(!$this->calls == $expectedCalls){
+            throw new Exception("Incorrect number of logout calls");
+        }
+
+        return true;
     }
 }

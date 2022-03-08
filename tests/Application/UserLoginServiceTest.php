@@ -10,6 +10,7 @@ use UserLoginService\Domain\User;
 use UserLoginService\Infrastructure\FacebookSessionManager;
 use UserLoginService\Tests\Doubles\DummySessionManager;
 use UserLoginService\Tests\Doubles\FakeSessionManager;
+use UserLoginService\Tests\Doubles\SpySessionManager;
 use UserLoginService\Tests\Doubles\StubSessionManager;
 
 final class UserLoginServiceTest extends TestCase
@@ -55,7 +56,8 @@ final class UserLoginServiceTest extends TestCase
     /**
      * @test
      */
-    public function userIsLoggedInExternalService(){
+    public function userIsLoggedInExternalService()
+    {
 
         $userName = "user_name";
         $password = "password";
@@ -71,7 +73,8 @@ final class UserLoginServiceTest extends TestCase
     /**
      * @test
      */
-    public function userIsNotLoggedInExternalService(){
+    public function userIsNotLoggedInExternalService()
+    {
 
         $userName = "user_name";
         $password = "wrong_password";
@@ -82,5 +85,36 @@ final class UserLoginServiceTest extends TestCase
 
         $this->assertEquals($userLoginService::LOGIN_INCORRECTO, $result);
 
+    }
+
+    /**
+     * @test
+     */
+    public function userNotLoggedOutUserNotBeingLoggedIn()
+    {
+
+        $user = new User("user_name");
+        $userLoginService = new UserLoginService(new DummySessionManager());
+
+        $result = $userLoginService->logout($user);
+
+        $this->assertEquals($userLoginService::USUARIO_NO_LOGEADO, $result);
+    }
+
+    /**
+     * @test
+     */
+    public function userLogout()
+    {
+
+        $user = new User("user_name");
+        $sessionManager = new SpySessionManager();
+        $userLoginService = new UserLoginService($sessionManager);
+        $userLoginService->manualLogin($user);
+
+        $result = $userLoginService->logout($user);
+
+        $sessionManager->verifyLogoutCalls(1);
+        $this->assertEquals("Ok", $result);
     }
 }
