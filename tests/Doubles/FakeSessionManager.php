@@ -4,16 +4,16 @@ namespace UserLoginService\Tests\Doubles;
 
 use UserLoginService\Application\SessionManager;
 
-class StubSessionManager implements SessionManager
+class FakeSessionManager implements SessionManager
 {
 
     public function getSessions(): int
     {
-        return 10;
+        // TODO: Implement getSessions() method.
     }
 
     public function login(string $userName, string $password): bool
     {
-        return true;
+        return ($userName == "user_name" && $password == "password");
     }
 }

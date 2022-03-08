@@ -7,7 +7,9 @@ namespace UserLoginService\Tests\Application;
 use PHPUnit\Framework\TestCase;
 use UserLoginService\Application\UserLoginService;
 use UserLoginService\Domain\User;
+use UserLoginService\Infrastructure\FacebookSessionManager;
 use UserLoginService\Tests\Doubles\DummySessionManager;
+use UserLoginService\Tests\Doubles\FakeSessionManager;
 use UserLoginService\Tests\Doubles\StubSessionManager;
 
 final class UserLoginServiceTest extends TestCase
@@ -15,7 +17,7 @@ final class UserLoginServiceTest extends TestCase
     /**
      * @test
      */
-    public function userIsLoggedIn()
+    public function userIsLoggedInManual()
     {
         $user = new User("user_name");
         $expectedLoggedUsers = [$user];
@@ -48,5 +50,37 @@ final class UserLoginServiceTest extends TestCase
         $externalSessions = $userLoginService->countExternalSessions();
 
         $this->assertEquals(10, $externalSessions);
+    }
+
+    /**
+     * @test
+     */
+    public function userIsLoggedInExternalService(){
+
+        $userName = "user_name";
+        $password = "password";
+        $userLoginService = new UserLoginService(new StubSessionManager());
+
+
+        $result = $userLoginService->login($userName, $password);
+
+        $this->assertEquals($userLoginService::LOGIN_CORRECTO, $result);
+
+    }
+
+    /**
+     * @test
+     */
+    public function userIsNotLoggedInExternalService(){
+
+        $userName = "user_name";
+        $password = "wrong_password";
+        $userLoginService = new UserLoginService(new FakeSessionManager());
+
+
+        $result = $userLoginService->login($userName, $password);
+
+        $this->assertEquals($userLoginService::LOGIN_INCORRECTO, $result);
+
     }
 }

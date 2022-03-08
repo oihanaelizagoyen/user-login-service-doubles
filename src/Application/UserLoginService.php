@@ -6,6 +6,8 @@ use UserLoginService\Domain\User;
 
 class UserLoginService
 {
+    const LOGIN_CORRECTO = "Login correcto";
+    const LOGIN_INCORRECTO = "Login incorrecto";
     private array $loggedUsers = [];
     private SessionManager $sessionManager;
 
@@ -18,9 +20,6 @@ class UserLoginService
         $this->loggedUsers[] = $user;
     }
 
-    /**
-     * @return array
-     */
     public function getLoggedUsers(): array
     {
         return $this->loggedUsers;
@@ -29,6 +28,15 @@ class UserLoginService
     public function countExternalSessions():int{
 
         return $this->sessionManager->getSessions();
+    }
+
+    public function login(String $userName, String $password): String{
+
+        if($this->sessionManager->login($userName, $password)){
+            return self::LOGIN_CORRECTO;
+        }
+
+        return self::LOGIN_INCORRECTO;
     }
 
 }
