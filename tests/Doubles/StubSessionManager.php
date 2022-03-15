@@ -21,4 +21,9 @@ class StubSessionManager implements SessionManager
     {
         // TODO: Implement logout() method.
     }
+
+    public function secureLogin(string $getUserName)
+    {
+        // TODO: Implement secureLogin() method.
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace UserLoginService\Application;
 
+use Exception;
 use UserLoginService\Domain\User;
 
 class UserLoginService
@@ -9,6 +10,7 @@ class UserLoginService
     const LOGIN_CORRECTO = "Login correcto";
     const LOGIN_INCORRECTO = "Login incorrecto";
     const USUARIO_NO_LOGEADO = "Usuario no logeado";
+
     private array $loggedUsers = [];
     private SessionManager $sessionManager;
 
@@ -32,7 +34,7 @@ class UserLoginService
         return $this->sessionManager->getSessions();
     }
 
-    public function login(String $userName, String $password): String
+    public function login(string $userName, string $password): string
     {
 
         if($this->sessionManager->login($userName, $password)){
@@ -42,7 +44,7 @@ class UserLoginService
         return self::LOGIN_INCORRECTO;
     }
 
-    public function logout(User $user): String
+    public function logout(User $user): string
     {
 
         if(!in_array($user, $this->loggedUsers)){
@@ -50,6 +52,29 @@ class UserLoginService
         }
 
         $this->sessionManager->logout($user->getUserName());
+
+        return "Ok";
+    }
+
+    public function secureLogin(User $user) : String
+    {
+        try{
+
+            $this->sessionManager->secureLogin($user->getUserName());
+
+        }catch (Exception $exception){
+
+            if($exception->getMessage() == "User does not exist"){
+                return "Usuario no existe";
+            }
+            if($exception->getMessage() == "User incorrect credentials"){
+                return "Credenciales incorrectas";
+            }
+            if($exception->getMessage() == "Service not responding"){
+                return "Servicio no responde";
+            }
+
+        }
 
         return "Ok";
     }
